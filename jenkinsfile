@@ -6,17 +6,15 @@ pipeline {
         stage('Checkout') {
             steps {
                 echo 'Checking out registration page...'
-                // Use this if your project is in Git:
-                // git branch: 'main',
-                //     url: 'https://github.com/USERNAME/REPOSITORY.git'
+       
             }
         }
 
         stage('Check HTML Files') {
             steps {
                 script {
-                    if (!fileExists('index.html')) {
-                        error('index.html not found in workspace!')
+                    if (!fileExists('registration.html')) {
+                        error('registration.html not found in workspace!')
                     }
                 }
                 echo 'HTML file found successfully.'
