@@ -1,59 +1,48 @@
+
 pipeline {
     agent any
 
     stages {
-        stage('Install Dependencies') {
+        stage('Checkout') {
             steps {
-                echo 'Static HTML project - no dependencies required'
+                echo 'Checking out registration page...'
+                // Use this if your project is in Git:
+                // git branch: 'main',
+                //     url: 'https://github.com/USERNAME/REPOSITORY.git'
             }
         }
 
-        stage('Run Tests') {
+        stage('Check HTML Files') {
             steps {
-                bat 'if exist registration.html (echo index.html found) else (exit 1)'
+                script {
+                    if (!fileExists('index.html')) {
+                        error('index.html not found in workspace!')
+                    }
+                }
+                echo 'HTML file found successfully.'
             }
         }
 
-        stage('Build') {
+        stage('Deploy Locally') {
             steps {
-                echo 'Preparing static website files'
-                bat 'dir'
-            }
-        }
+                echo 'Starting local web server...'
 
-        stage('Deploy to EC2') {
-            steps {
-                sshPublisher(
-                    publishers: [
-                        sshPublisherDesc(
-                            configName: 'CICD',
-                            transfers: [
-                                sshTransfer(
-                                    sourceFiles: 'registration.html',
-                                    remoteDirectory: '/var/www/html',
-                                    removePrefix: '',
-                                    execCommand: '',
-                                    execTimeout: 120000,
-                                    flatten: true,
-                                    makeEmptyDirs: false,
-                                    noDefaultExcludes: false,
-                                    patternSeparator: '[, ]+'
-                                )
-                            ],
-                            verbose: true
-                        )
-                    ]
-                )
+                bat '''
+                    @echo off
+                    start "Registration Web Server" /B python -m http.server 8080
+                '''
             }
         }
     }
 
     post {
         success {
-            echo 'Deployment completed successfully!'
+            echo 'Registration page deployment completed.'
+            echo 'Open http://localhost:8080 in your browser.'
         }
+
         failure {
-            echo 'Pipeline failed!'
+            echo 'Pipeline failed. Check the Jenkins console output.'
         }
     }
 }
