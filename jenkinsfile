@@ -36,7 +36,7 @@ pipeline {
     post {
         success {
             echo 'Registration page deployment completed.'
-            echo 'Open http://localhost:8080 in your browser.'
+            echo 'Open http://localhost:8085 in your browser.'
         }
 
         failure {
